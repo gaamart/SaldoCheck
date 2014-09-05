@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SaldoCheck</string>
+    <string name="buttonNameSaque">Subtrair</string>
+    <string name="buttonNameDeposito">Somar</string>
+    <string name="textDialogTitle">Limpar saldo atual</string>
+    <string name="textDialogMessage">Deseja realmente continuar?</string>
+    <string name="textDialogPositive">Sim</string>
+    <string name="textDialogNegative">Não</string>
+    <string name="textDialogTitleOver1Billion">Seu saldo é maior que 1 bilhão</string>
+    <string name="textDialogMessageOver1Billion">Você é rico demais para se preocupar com seu saldo. =)</string>
+    <string name="textDialogPositiveOver1Billion">OK</string>
+    <string name="textViewOver1Billion">Muito Dinheiro !!!</string>
+    <string name="textDialogTitleBelow100millions">Seu saldo é menor que 100 milhões</string>
+    <string name="textDialogMessageBelow100millions">Você está devendo até as calças, é melhor procurar um advogado.</string>
+    <string name="textDialogPositiveBelow100millions">OK</string>
+    <string name="textViewBelow100millions">Muita Dívida !!!</string>
+    <string name="textViewOperationSaque">Você está subtraindo a seu saldo:</string>
+    <string name="textViewOperationDeposito">Você está somando a seu saldo:</string>
+
+</resources>
