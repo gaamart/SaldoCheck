@@ -23,11 +23,13 @@ import java.text.NumberFormat;
 
 public class MainActivity extends ActionBarActivity{
 
+    private enum OperationType { Subtract, Add, New, Visualize  }
+
     private BigDecimal saldoValue;
     private BigDecimal over1Billion;
     private BigDecimal below100millions;
     private BigDecimal changeValue;
-    private int operation;
+    private OperationType operationType;
     private boolean keyboardOpen;
     private ExtendedTextWatcher extendedTextWatcher;
     private InputMethodManager inputMethodManager;
@@ -59,10 +61,11 @@ public class MainActivity extends ActionBarActivity{
         over1Billion = new BigDecimal("1000000000");
         below100millions = new BigDecimal("-100000000");
         changeValue = BigDecimal.ZERO;
-        operation = -1;
+        operationType = OperationType.Visualize;
         extendedTextWatcher = new ExtendedTextWatcher(editText);
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         keyboardOpen = false;
+        setOperationText();
     }
 
     private void createAdBanner(){
@@ -76,13 +79,13 @@ public class MainActivity extends ActionBarActivity{
     }
 
     public void buttonSaqueOnClick(View v){
-        this.operation = 1;
-        this.manageEditText();
+        operationType = OperationType.Subtract;
+        manageEditText();
     }
 
     public void buttonDepositoOnClick(View v){
-        this.operation = 2;
-        this.manageEditText();
+        operationType = OperationType.Add;
+        manageEditText();
     }
 
     public void buttonCleanerOnClick(View v){
@@ -101,7 +104,7 @@ public class MainActivity extends ActionBarActivity{
                     .setCancelable(false)
                     .setPositiveButton(positiveText,new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int id) {
-                            operation = 3;
+                            operationType = OperationType.New;
                             executeOperation();
                         }
                     })
@@ -130,7 +133,6 @@ public class MainActivity extends ActionBarActivity{
         Button somarButton = (Button) findViewById(R.id.buttonDeposito);
         Button subtrairButton = (Button) findViewById(R.id.buttonSaque);
         Button limparButton = (Button) findViewById(R.id.buttonAtualizar);
-        TextView operationTextView = (TextView) findViewById(R.id.textViewOperation);
         AdView adView = (AdView)this.findViewById(R.id.adView);
 
         if (show){
@@ -139,9 +141,6 @@ public class MainActivity extends ActionBarActivity{
             somarButton.setVisibility(View.INVISIBLE);
             subtrairButton.setVisibility(View.INVISIBLE);
             limparButton.setVisibility(View.INVISIBLE);
-            operationTextView.setVisibility(View.VISIBLE);
-            if(operation == 1) operationTextView.setText(getResources().getString(R.string.textViewOperationSaque));
-            else if(operation == 2) operationTextView.setText(getResources().getString(R.string.textViewOperationDeposito));
             setEditTextFirstValue();
             editText.addTextChangedListener(extendedTextWatcher);
             editText.requestFocus();
@@ -149,19 +148,19 @@ public class MainActivity extends ActionBarActivity{
             keyboardOpen = true;
             adView.setVisibility(View.INVISIBLE);
         } else {
+            operationType = OperationType.Visualize;
             editText.setVisibility(View.INVISIBLE);
             textView.setVisibility(View.VISIBLE);
             somarButton.setVisibility(View.VISIBLE);
             subtrairButton.setVisibility(View.VISIBLE);
             limparButton.setVisibility(View.VISIBLE);
-            operationTextView.setVisibility(View.INVISIBLE);
-            operationTextView.setText("");
             editText.removeTextChangedListener(extendedTextWatcher);
             inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
             whaitFor(10);
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
             adView.setVisibility(View.VISIBLE);
         }
+        setOperationText();
     }
 
     private void setEditTextFirstValue() {
@@ -179,7 +178,8 @@ public class MainActivity extends ActionBarActivity{
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     try {
-                        changeValue = new BigDecimal(editText.getText().toString().replaceAll("[$R.]", "").replace(',', '.'));
+                        String regex = "[" + getCurrencySymbol() + ".]";
+                        changeValue = new BigDecimal(editText.getText().toString().replaceAll(regex, "").replace(',', '.'));
                         executeOperation();
                     } catch (Exception e) { e.printStackTrace(); }
                     showEditTextComponents(false);
@@ -198,16 +198,16 @@ public class MainActivity extends ActionBarActivity{
     }
 
     private void executeOperation(){
-        switch (this.operation){
-            case 1:{
+        switch (operationType){
+            case Subtract:{
                 saldoValue = saldoValue.subtract(changeValue);
                 break;
             }
-            case 2:{
+            case Add:{
                 saldoValue =  saldoValue.add(changeValue);
                 break;
             }
-            case 3:{
+            case New:{
                 saldoValue = BigDecimal.ZERO;
                 break;
             }
@@ -215,8 +215,15 @@ public class MainActivity extends ActionBarActivity{
                 break;
             }
         }
-        this.updateSaldo();
-        this.saveSaldo();
+        updateSaldo();
+        saveSaldo();
+    }
+
+    private void setOperationText(){
+        TextView operationTextView = (TextView) findViewById(R.id.textViewOperation);
+        if(operationType == OperationType.Subtract) operationTextView.setText(getResources().getString(R.string.textViewOperationSaque));
+        else if(operationType == OperationType.Add) operationTextView.setText(getResources().getString(R.string.textViewOperationDeposito));
+        else operationTextView.setText(getResources().getString(R.string.textViewOperationVisualizar));
     }
 
     private void saveSaldo(){
@@ -253,8 +260,7 @@ public class MainActivity extends ActionBarActivity{
             textView.setText(R.string.textViewBelow100millions);
         } else {
             DecimalFormat decform = (DecimalFormat) NumberFormat.getCurrencyInstance();
-            String symbol = decform.getCurrency().getSymbol();
-            decform.setNegativePrefix(symbol + "-");
+            decform.setNegativePrefix(getCurrencySymbol() + "-");
             decform.setNegativeSuffix("");
             textView.setText(decform.format(saldoValue));
         }
@@ -266,5 +272,11 @@ public class MainActivity extends ActionBarActivity{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getCurrencySymbol(){
+        DecimalFormat decform = (DecimalFormat) NumberFormat.getCurrencyInstance();
+        return decform.getCurrency().getSymbol();
+
     }
 }

@@ -1,11 +1,6 @@
 /**
- * This class overrides the onKeyPreIme method to dispatch a key event if the
- * KeyEvent passed to onKeyPreIme has a key code of KeyEvent.KEYCODE_BACK.
- * This allows key event listeners to detect that the soft keyboard was
- * dismissed.
- *
+ * Created by guilhermeaugusto on 16/06/2014.
  */
-
 package com.applications.guilhermeaugusto.saldocheck;
 
 import android.content.Context;
@@ -13,10 +8,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.EditText;
-
-import java.text.NumberFormat;
 
 /**
  * Created by guilhermeaugusto on 16/06/2014.
@@ -30,6 +22,7 @@ public class ExtendedEditText extends EditText {
     public ExtendedEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initialise();
+
     }
 
     public ExtendedEditText(Context context, AttributeSet attrs) {

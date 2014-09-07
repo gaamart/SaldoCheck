@@ -2,8 +2,10 @@
 <resources>
 
     <string name="app_name">SaldoCheck</string>
-    <string name="buttonNameSaque">Subtrair</string>
-    <string name="buttonNameDeposito">Somar</string>
+    <string name="buttonNameSaque">Sacar</string>
+    <string name="buttonNameDeposito">Depositar</string>
+    <string name="buttonNamePositivo">Saldo positivo</string>
+    <string name="buttonNameNegativo">Saldo negativo</string>
     <string name="textDialogTitle">Limpar saldo atual</string>
     <string name="textDialogMessage">Deseja realmente continuar?</string>
     <string name="textDialogPositive">Sim</string>
@@ -16,7 +18,8 @@
     <string name="textDialogMessageBelow100millions">Você está devendo até as calças, é melhor procurar um advogado.</string>
     <string name="textDialogPositiveBelow100millions">OK</string>
     <string name="textViewBelow100millions">Muita Dívida !!!</string>
-    <string name="textViewOperationSaque">Você está subtraindo a seu saldo:</string>
+    <string name="textViewOperationSaque">Você está subtraindo de seu saldo:</string>
     <string name="textViewOperationDeposito">Você está somando a seu saldo:</string>
+    <string name="textViewOperationVisualizar">Seu saldo atual é de:</string>
 
 </resources>

@@ -2,20 +2,20 @@
 <pre-dex-items>
 
     <item
-        dex="C:\Users\guilhermeaugusto\AndroidStudioProjects\SaldoCheck\app\build\intermediates\pre-dexed\debug\classes-1a7bd4d10d0e250e937e94620ddda7b145200012.jar"
-        jar="C:\Users\guilhermeaugusto\AndroidStudioProjects\SaldoCheck\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        dex="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/pre-dexed/debug/classes-0374fa85d4f70dfb9064af7ab2de4e99db664254.jar"
+        jar="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
     <item
-        dex="C:\Users\guilhermeaugusto\AndroidStudioProjects\SaldoCheck\app\build\intermediates\pre-dexed\debug\classes-1e876750a335285746cb705cda7d08d3c79d4f33.jar"
-        jar="C:\Users\guilhermeaugusto\AndroidStudioProjects\SaldoCheck\app\build\intermediates\exploded-aar\com.google.android.gms\play-services\5.0.77\classes.jar"
+        dex="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/pre-dexed/debug/classes-ca3f6f8d744e8e997332684c4f79aa76c142d7a7.jar"
+        jar="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/5.2.08/classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="b6a82434c1eca686607867cd906bcc80ed987837"/>
+        sha1="1ed7a7a05185651f9af41ad93711cb96b66f331c"/>
     <item
-        dex="C:\Users\guilhermeaugusto\AndroidStudioProjects\SaldoCheck\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-a73eb51979c87c873991520dcca55f9650c542aa.jar"
-        jar="C:\Users\guilhermeaugusto\AppData\Local\Android\android-studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        dex="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-fe930dc68beb1e566675ce71b270d4091c6c249b.jar"
+        jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
