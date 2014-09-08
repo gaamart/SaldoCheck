@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -23,13 +22,17 @@ import java.text.NumberFormat;
 
 public class MainActivity extends ActionBarActivity{
 
-    private enum OperationType { Subtract, Add, New, Visualize  }
+    private enum ModelType { Edit, Visualize  }
+    private enum EditType { Subtract, Add, New, Positive, Negative }
+    private enum VisualizeType { New, Over, Under, Default }
+    private enum DialogType { OverFlow, Reset, None }
 
     private BigDecimal saldoValue;
     private BigDecimal over1Billion;
     private BigDecimal below100millions;
     private BigDecimal changeValue;
-    private OperationType operationType;
+    private EditType editType;
+    private VisualizeType visualizeType;
     private boolean keyboardOpen;
     private ExtendedTextWatcher extendedTextWatcher;
     private InputMethodManager inputMethodManager;
@@ -47,7 +50,7 @@ public class MainActivity extends ActionBarActivity{
     @Override
     protected void onPause(){
         super.onPause();
-        showEditTextComponents(false);
+        rulesForShowComponents(ModelType.Visualize);
     }
 
     @Override
@@ -61,106 +64,120 @@ public class MainActivity extends ActionBarActivity{
         over1Billion = new BigDecimal("1000000000");
         below100millions = new BigDecimal("-100000000");
         changeValue = BigDecimal.ZERO;
-        operationType = OperationType.Visualize;
         extendedTextWatcher = new ExtendedTextWatcher(editText);
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         keyboardOpen = false;
-        setOperationText();
     }
 
     private void createAdBanner(){
         AdView adView = (AdView)this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                //.addTestDevice("2C867BB5A2F2C60A3BACB3C0302ECC8B")
-                //.addTestDevice("C32AD3AA2C5D97BFD40ADB6FA9536FC0")
-                //.addTestDevice("F85FBF4907189CF6E54D8FBAFF1499E3")
                 .build();
         adView.loadAd(adRequest);
     }
 
     public void buttonSaqueOnClick(View v){
-        operationType = OperationType.Subtract;
-        manageEditText();
+        if(visualizeType == VisualizeType.New){ editType = EditType.Negative; }
+        else { editType = EditType.Subtract; }
+        rulesForShowComponents(ModelType.Edit);
     }
 
     public void buttonDepositoOnClick(View v){
-        operationType = OperationType.Add;
-        manageEditText();
+        if(visualizeType == VisualizeType.New){ editType = EditType.Positive; }
+        else {editType = EditType.Add; }
+        rulesForShowComponents(ModelType.Edit);
     }
 
     public void buttonCleanerOnClick(View v){
-        createAlertDialog(true,
+        createAlertDialog(DialogType.Reset,
                 getResources().getString(R.string.textDialogTitle),
                 getResources().getString(R.string.textDialogMessage),
                 getResources().getString(R.string.textDialogPositive),
                 getResources().getString(R.string.textDialogNegative));
     }
 
-    public void createAlertDialog(boolean options, String title, String message, String positiveText, String negativeText){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-        if(options){
-            alertDialogBuilder.setTitle(title);
-            alertDialogBuilder.setMessage(message)
-                    .setCancelable(false)
-                    .setPositiveButton(positiveText,new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            operationType = OperationType.New;
-                            executeOperation();
-                        }
-                    })
-                    .setNegativeButton(negativeText,new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            dialog.cancel();
-                        }
-                    });
-        } else {
-            alertDialogBuilder.setTitle(title);
-            alertDialogBuilder.setMessage(message)
-                    .setCancelable(false)
-                    .setPositiveButton(positiveText,new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            dialog.cancel();
-                        }
-                    });
-        }
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
-    private  void showEditTextComponents(boolean show) {
-        ExtendedTextView textView = (ExtendedTextView) findViewById(R.id.textViewSaldoAtual);
-        ExtendedEditText editText = (ExtendedEditText) findViewById(R.id.editTextSaldo);
+    private  void rulesForShowComponents(ModelType modelType) {
+        ExtendedTextView extendedTextView = (ExtendedTextView) findViewById(R.id.textViewSaldoAtual);
+        ExtendedEditText extendedEditText = (ExtendedEditText) findViewById(R.id.editTextSaldo);
+        TextView textViewOperation = (TextView) findViewById(R.id.textViewOperation);
+        TextView textViewComplementMessage = (TextView) findViewById(R.id.textViewComplementMessage);
         Button somarButton = (Button) findViewById(R.id.buttonDeposito);
         Button subtrairButton = (Button) findViewById(R.id.buttonSaque);
         Button limparButton = (Button) findViewById(R.id.buttonAtualizar);
         AdView adView = (AdView)this.findViewById(R.id.adView);
 
-        if (show){
-            editText.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.INVISIBLE);
-            somarButton.setVisibility(View.INVISIBLE);
-            subtrairButton.setVisibility(View.INVISIBLE);
-            limparButton.setVisibility(View.INVISIBLE);
-            setEditTextFirstValue();
-            editText.addTextChangedListener(extendedTextWatcher);
-            editText.requestFocus();
-            inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-            keyboardOpen = true;
-            adView.setVisibility(View.INVISIBLE);
-        } else {
-            operationType = OperationType.Visualize;
-            editText.setVisibility(View.INVISIBLE);
-            textView.setVisibility(View.VISIBLE);
-            somarButton.setVisibility(View.VISIBLE);
-            subtrairButton.setVisibility(View.VISIBLE);
-            limparButton.setVisibility(View.VISIBLE);
-            editText.removeTextChangedListener(extendedTextWatcher);
-            inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-            whaitFor(10);
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-            adView.setVisibility(View.VISIBLE);
+        switch (modelType){
+            case Edit: {
+                extendedEditText.setVisibility(View.VISIBLE);
+                extendedTextView.setVisibility(View.INVISIBLE);
+                somarButton.setVisibility(View.INVISIBLE);
+                subtrairButton.setVisibility(View.INVISIBLE);
+                limparButton.setVisibility(View.INVISIBLE);
+                textViewOperation.setVisibility(View.VISIBLE);
+                textViewComplementMessage.setVisibility(View.INVISIBLE);
+                manageEditText();
+                setEditTextFirstValue();
+                extendedEditText.addTextChangedListener(extendedTextWatcher);
+                extendedEditText.requestFocus();
+                inputMethodManager.showSoftInput(extendedEditText, InputMethodManager.SHOW_IMPLICIT);
+                keyboardOpen = true;
+                adView.setVisibility(View.INVISIBLE);
+
+                switch (editType){
+                    case Add: textViewOperation.setText(getResources().getString(R.string.textViewOperationDeposito)); break;
+                    case Subtract: textViewOperation.setText(getResources().getString(R.string.textViewOperationSaque)); break;
+                    case Positive: textViewOperation.setText(getResources().getString(R.string.textViewOperationSaldoPositivo)); break;
+                    case Negative: textViewOperation.setText(getResources().getString(R.string.textViewOperationSaldoNegativo)); break;
+                    default: break;
+                }
+
+                break;
+            }
+            case Visualize: {
+                extendedEditText.setVisibility(View.INVISIBLE);
+                extendedTextView.setVisibility(View.VISIBLE);
+                somarButton.setVisibility(View.VISIBLE);
+                subtrairButton.setVisibility(View.VISIBLE);
+                somarButton.setText(getResources().getString(R.string.buttonNameDeposito));
+                subtrairButton.setText(getResources().getString(R.string.buttonNameSaque));
+                limparButton.setVisibility(View.VISIBLE);
+                textViewOperation.setVisibility(View.VISIBLE);
+                textViewComplementMessage.setVisibility(View.INVISIBLE);
+                extendedEditText.removeTextChangedListener(extendedTextWatcher);
+                inputMethodManager.hideSoftInputFromWindow(extendedEditText.getWindowToken(), 0);
+                whaitFor(10);
+                adView.setVisibility(View.VISIBLE);
+
+                switch (visualizeType){
+                    case New: {
+                        extendedTextView.setVisibility(View.INVISIBLE);
+                        textViewComplementMessage.setVisibility(View.VISIBLE);
+                        limparButton.setVisibility(View.INVISIBLE);
+                        textViewOperation.setText(getResources().getString(R.string.textViewOperationNewSaldo));
+                        somarButton.setText(getResources().getString(R.string.buttonNamePositivo));
+                        subtrairButton.setText(getResources().getString(R.string.buttonNameNegativo));
+                        break;
+                    }
+                    case Over: {
+                        extendedTextView.setText(R.string.textViewOver1Billion);
+                        textViewOperation.setText(getResources().getString(R.string.textViewOperationVisualizar));
+                        break;
+                    }
+                    case Under: {
+                        extendedTextView.setText(R.string.textViewBelow100millions);
+                        textViewOperation.setText(getResources().getString(R.string.textViewOperationVisualizar));
+                        break;
+                    }
+                    case Default: {
+                        textViewOperation.setText(getResources().getString(R.string.textViewOperationVisualizar));
+                        extendedTextView.setText(formatCurrency(saldoValue));
+                    } break;
+                    default: break;
+                }
+                break;
+            }
+            default: break;
         }
-        setOperationText();
     }
 
     private void setEditTextFirstValue() {
@@ -170,19 +187,19 @@ public class MainActivity extends ActionBarActivity{
         editText.setText(formatted);
         editText.setSelection(formatted.length());
     }
+
     private void manageEditText(){
-        showEditTextComponents(true);
         final ExtendedEditText editText = (ExtendedEditText) findViewById(R.id.editTextSaldo);
         editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     try {
-                        String regex = "[" + getCurrencySymbol() + ".]";
-                        changeValue = new BigDecimal(editText.getText().toString().replaceAll(regex, "").replace(',', '.'));
+                        String regex = "[" + getCurrencySymbol() + ".,]";
+                        String value = editText.getText().toString().replaceAll(regex, "");
+                        changeValue = new BigDecimal(value.substring(0, value.length() - 2) + "." + value.substring(value.length() - 2, value.length()));
                         executeOperation();
                     } catch (Exception e) { e.printStackTrace(); }
-                    showEditTextComponents(false);
                     keyboardOpen = false;
                 }
                 return false;
@@ -192,44 +209,31 @@ public class MainActivity extends ActionBarActivity{
         editText.setEventListener(new ExtendedEditText.KeyPreImeListener() {
             @Override
             public void onKeyPreImeAccured() {
-                showEditTextComponents(false);
+                rulesForShowComponents(ModelType.Visualize);
             }
         });
     }
 
     private void executeOperation(){
-        switch (operationType){
-            case Subtract:{
-                saldoValue = saldoValue.subtract(changeValue);
-                break;
-            }
-            case Add:{
-                saldoValue =  saldoValue.add(changeValue);
-                break;
-            }
-            case New:{
-                saldoValue = BigDecimal.ZERO;
-                break;
-            }
-            default:{
-                break;
-            }
+        if(saldoValue == null) saldoValue = BigDecimal.ZERO;
+
+        switch (editType){
+            case Negative:
+            case Subtract:{ saldoValue = saldoValue.subtract(changeValue); break; }
+            case Positive:
+            case Add:{ saldoValue =  saldoValue.add(changeValue); break; }
+            case New:{ saldoValue = null; break; }
+            default:{ break; }
         }
         updateSaldo();
         saveSaldo();
     }
 
-    private void setOperationText(){
-        TextView operationTextView = (TextView) findViewById(R.id.textViewOperation);
-        if(operationType == OperationType.Subtract) operationTextView.setText(getResources().getString(R.string.textViewOperationSaque));
-        else if(operationType == OperationType.Add) operationTextView.setText(getResources().getString(R.string.textViewOperationDeposito));
-        else operationTextView.setText(getResources().getString(R.string.textViewOperationVisualizar));
-    }
-
     private void saveSaldo(){
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("storedSaldo", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("storedSaldo", saldoValue.toString());
+        if(saldoValue != null) { editor.putString("storedSaldo", saldoValue.toString()); }
+        else { editor.putString("storedSaldo", null); }
         editor.commit();
 
         Intent updateWidgetIntent = new Intent(getApplicationContext(), Widget.class);
@@ -239,44 +243,76 @@ public class MainActivity extends ActionBarActivity{
 
     private void loadSaldo(){
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("storedSaldo", MODE_PRIVATE);
-        saldoValue = new BigDecimal(sharedPref.getString("storedSaldo", "0"));
+        String saldo = sharedPref.getString("storedSaldo", null);
+        if(saldo != null) { saldoValue = new BigDecimal(saldo); }
+        else { saldoValue = null; }
     }
 
     private void updateSaldo(){
-        ExtendedTextView textView = (ExtendedTextView) findViewById(R.id.textViewSaldoAtual);
-        if(saldoValue.compareTo(over1Billion) >= 0){
-            createAlertDialog(false,
+        if(saldoValue == null){ visualizeType = VisualizeType.New; }
+        else if(saldoValue.compareTo(over1Billion) >= 0){
+            visualizeType = VisualizeType.Over;
+            createAlertDialog(DialogType.OverFlow,
                     getResources().getString(R.string.textDialogTitleOver1Billion),
                     getResources().getString(R.string.textDialogMessageOver1Billion),
                     getResources().getString(R.string.textDialogPositiveOver1Billion),
                     null);
-                textView.setText(R.string.textViewOver1Billion);
-        } else if(saldoValue.compareTo(below100millions) <= 0) {
-            createAlertDialog(false,
+        }
+        else if(saldoValue.compareTo(below100millions) <= 0) {
+            visualizeType = VisualizeType.Under;
+            createAlertDialog(DialogType.OverFlow,
                     getResources().getString(R.string.textDialogTitleBelow100millions),
                     getResources().getString(R.string.textDialogMessageBelow100millions),
                     getResources().getString(R.string.textDialogPositiveBelow100millions),
-                    null);
-            textView.setText(R.string.textViewBelow100millions);
-        } else {
-            DecimalFormat decform = (DecimalFormat) NumberFormat.getCurrencyInstance();
-            decform.setNegativePrefix(getCurrencySymbol() + "-");
-            decform.setNegativeSuffix("");
-            textView.setText(decform.format(saldoValue));
+                    null);}
+        else { visualizeType = VisualizeType.Default; }
+        rulesForShowComponents(ModelType.Visualize);
+    }
+
+    public void createAlertDialog(DialogType dialogType, String title, String message, String positiveText, String negativeText){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
+        switch (dialogType){
+            case Reset: {
+                alertDialogBuilder.setPositiveButton(positiveText,new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                    editType = EditType.New;
+                    executeOperation();
+                    }
+                })
+                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) { dialog.cancel(); }
+                });
+                break;
+            }
+            case OverFlow: {
+                alertDialogBuilder.setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) { dialog.cancel(); }
+                });
+                break;
+            }
+            default: break;
         }
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void whaitFor(int miliseconds){
-        try {
-            Thread.sleep(miliseconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        try { Thread.sleep(miliseconds); }
+        catch (InterruptedException e) { e.printStackTrace(); }
     }
 
     public String getCurrencySymbol(){
         DecimalFormat decform = (DecimalFormat) NumberFormat.getCurrencyInstance();
         return decform.getCurrency().getSymbol();
+    }
 
+    public String formatCurrency(BigDecimal value){
+        DecimalFormat decform = (DecimalFormat) NumberFormat.getCurrencyInstance();
+        decform.setNegativePrefix(getCurrencySymbol() + "-");
+        decform.setNegativeSuffix("");
+        return decform.format(value);
     }
 }

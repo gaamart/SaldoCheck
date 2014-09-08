@@ -4,8 +4,8 @@
     <string name="app_name">SaldoCheck</string>
     <string name="buttonNameSaque">Sacar</string>
     <string name="buttonNameDeposito">Depositar</string>
-    <string name="buttonNamePositivo">Saldo positivo</string>
-    <string name="buttonNameNegativo">Saldo negativo</string>
+    <string name="buttonNamePositivo">Positivo</string>
+    <string name="buttonNameNegativo">Negativo</string>
     <string name="textDialogTitle">Limpar saldo atual</string>
     <string name="textDialogMessage">Deseja realmente continuar?</string>
     <string name="textDialogPositive">Sim</string>
@@ -20,6 +20,9 @@
     <string name="textViewBelow100millions">Muita Dívida !!!</string>
     <string name="textViewOperationSaque">Você está subtraindo de seu saldo:</string>
     <string name="textViewOperationDeposito">Você está somando a seu saldo:</string>
+    <string name="textViewOperationSaldoPositivo">Inserindo o saldo positivo:</string>
+    <string name="textViewOperationSaldoNegativo">Inserindo o saldo negativo:</string>
     <string name="textViewOperationVisualizar">Seu saldo atual é de:</string>
-
+    <string name="textViewOperationNewSaldo">Você não possui um saldo!</string>
+    <string name="textViewSubOperationNewSaldo">Que tipo de saldo deseja inserir?</string>
 </resources>
