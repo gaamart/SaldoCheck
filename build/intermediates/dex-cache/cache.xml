@@ -14,7 +14,7 @@
         revision="19.1.0"
         sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
     <item
-        dex="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/pre-dexed/release/classes-f8601873e934b7b8cbf92e5f86802c3aa4895876.jar"
+        dex="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/pre-dexed/debug/classes-f8601873e934b7b8cbf92e5f86802c3aa4895876.jar"
         jar="/Users/guilhermemartins/Documents/ASProjects/SaldoCheck/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/5.0.89/classes.jar"
         jumboMode="false"
         revision="19.1.0"
